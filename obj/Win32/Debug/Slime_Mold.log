@@ -1,0 +1,39 @@
+﻿  main.cpp
+  ofApp.cpp
+  Info: Boost.Config is older than your compiler version - probably nothing bad will happen - but you may wish to look for an update Boost version.  Define BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE to suppress this message.
+  Info: Boost.Config is older than your compiler version - probably nothing bad will happen - but you may wish to look for an update Boost version.  Define BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE to suppress this message.
+  ofxBaseGui.cpp
+  ofxButton.cpp
+  ofxColorPicker.cpp
+  ofxGuiGroup.cpp
+  ofxInputField.cpp
+  ofxLabel.cpp
+  ofxPanel.cpp
+  ofxSlider.cpp
+  ofxSliderGroup.cpp
+  ofxToggle.cpp
+  Info: Boost.Config is older than your compiler version - probably nothing bad will happen - but you may wish to look for an update Boost version.  Define BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE to suppress this message.
+  Info: Boost.Config is older than your compiler version - probably nothing bad will happen - but you may wish to look for an update Boost version.  Define BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE to suppress this message.
+  Info: Boost.Config is older than your compiler version - probably nothing bad will happen - but you may wish to look for an update Boost version.  Define BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE to suppress this message.
+  Info: Boost.Config is older than your compiler version - probably nothing bad will happen - but you may wish to look for an update Boost version.  Define BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE to suppress this message.
+  Info: Boost.Config is older than your compiler version - probably nothing bad will happen - but you may wish to look for an update Boost version.  Define BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE to suppress this message.
+  Info: Boost.Config is older than your compiler version - probably nothing bad will happen - but you may wish to look for an update Boost version.  Define BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE to suppress this message.
+  Info: Boost.Config is older than your compiler version - probably nothing bad will happen - but you may wish to look for an update Boost version.  Define BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE to suppress this message.
+  Info: Boost.Config is older than your compiler version - probably nothing bad will happen - but you may wish to look for an update Boost version.  Define BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE to suppress this message.
+  Info: Boost.Config is older than your compiler version - probably nothing bad will happen - but you may wish to look for an update Boost version.  Define BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE to suppress this message.
+  Info: Boost.Config is older than your compiler version - probably nothing bad will happen - but you may wish to look for an update Boost version.  Define BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE to suppress this message.
+C:\Users\Kawa\Code_Projects\Open_Frameworks\Open_Frameworks\addons\ofxGui\src\ofxInputField.cpp(276,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Kawa\Code_Projects\Open_Frameworks\Open_Frameworks\addons\ofxGui\src\ofxInputField.cpp(265): message : while compiling class template member function 'void ofxInputField<float>::moveCursor(int)'
+C:\Users\Kawa\Code_Projects\Open_Frameworks\Open_Frameworks\addons\ofxGui\src\ofxInputField.cpp(368): message : see reference to function template instantiation 'void ofxInputField<float>::moveCursor(int)' being compiled
+C:\Users\Kawa\Code_Projects\Open_Frameworks\Open_Frameworks\addons\ofxGui\src\ofxInputField.cpp(805): message : see reference to class template instantiation 'ofxInputField<float>' being compiled
+     Creating library bin\Slime_Mold_debug.lib and object bin\Slime_Mold_debug.exp
+  Slime_Mold.vcxproj -> C:\Users\Kawa\Code_Projects\Open_Frameworks\Open_Frameworks\apps\myApps\Slime_Mold\bin\Slime_Mold_debug.exe
+  
+  	                   2	C:\Users\Kawa\Code_Projects\Open_Frameworks\Open_Frameworks\libs\fmod\lib\vs\Win32\
+  	    New File  		 1544704	C:\Users\Kawa\Code_Projects\Open_Frameworks\Open_Frameworks\libs\fmod\lib\vs\Win32\fmod.dll
+  	    New File  		 1733120	C:\Users\Kawa\Code_Projects\Open_Frameworks\Open_Frameworks\libs\fmod\lib\vs\Win32\fmodL.dll
+  
+  	                   1	C:\Users\Kawa\Code_Projects\Open_Frameworks\Open_Frameworks\libs\FreeImage\lib\vs\Win32\
+  	  *EXTRA File 		 1544704	C:\Users\Kawa\Code_Projects\Open_Frameworks\Open_Frameworks\apps\myApps\Slime_Mold\bin\fmod.dll
+  	  *EXTRA File 		 1733120	C:\Users\Kawa\Code_Projects\Open_Frameworks\Open_Frameworks\apps\myApps\Slime_Mold\bin\fmodL.dll
+  	    New File  		 6018560	C:\Users\Kawa\Code_Projects\Open_Frameworks\Open_Frameworks\libs\FreeImage\lib\vs\Win32\FreeImage.dll

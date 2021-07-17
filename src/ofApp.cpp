@@ -2,7 +2,7 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-
+	fragShader.load("shadersGL3/shader");
 }
 
 //--------------------------------------------------------------
@@ -12,7 +12,10 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-
+    ofSetColor(255);
+    fragShader.begin();
+    ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+    fragShader.end();
 }
 
 //--------------------------------------------------------------
@@ -69,3 +72,4 @@ void ofApp::gotMessage(ofMessage msg){
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
 }
+

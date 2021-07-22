@@ -1,0 +1,39 @@
+#version 440
+
+struct Particle {
+	vec4 pos;
+};
+
+struct Cell {
+	vec4 val;
+};
+
+uniform int screenWidth;
+uniform int screenHeight;
+
+layout(binding = 3) buffer particle {
+	Cell particles[];
+};
+
+layout(binding = 1) buffer oldTrail {
+	Cell oldTrailMap[];
+};
+
+layout(binding = 2) buffer newTrail {
+	Cell newTrailMap[];
+};
+
+
+
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+void main() {
+	// Move Particles
+	vec4 pos = particles[gl_GlobalInvocationID.x].val;
+	//particle.pos.xyz += vec3(1, 1, 0);
+	int index = int(pos.x) + int(int(pos.y) * screenWidth);
+
+	// Modify Trail
+	newTrailMap[0].val.r = 1;
+
+	//particles[gl_LocalInvocationIndex].pos = vec4(0, 0, 0, 0);
+}

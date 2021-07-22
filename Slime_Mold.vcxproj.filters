@@ -57,7 +57,13 @@
     <Filter Include="addons\ofxGui\src">
       <UniqueIdentifier>{645E9533-4DCD-6179-1CDF-CB65}</UniqueIdentifier>
     </Filter>
-    <Filter Include="shadersGL3">
+    <Filter Include="bin">
+      <UniqueIdentifier>{efb69b74-53f9-4377-8354-7e3d1e81881e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="bin\data">
+      <UniqueIdentifier>{b3a2d747-faea-44f9-99e2-578d45887814}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="bin\data\shadersGL3">
       <UniqueIdentifier>{fafc396f-4430-4e37-8e1c-862660e8c950}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -110,10 +116,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="shader.vert">
-      <Filter>shadersGL3</Filter>
+      <Filter>bin\data\shadersGL3</Filter>
     </None>
     <None Include="shader.frag">
-      <Filter>shadersGL3</Filter>
+      <Filter>bin\data\shadersGL3</Filter>
     </None>
   </ItemGroup>
 </Project>

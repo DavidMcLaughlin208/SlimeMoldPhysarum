@@ -1,22 +1,25 @@
 // fragment shader
 
-#version 150
+#version 440
 
 out vec4 outputColor;
+uniform int screenWidth;
+uniform int screenHeight;
+
+struct Cell {
+    vec4 val;
+};
+
+layout(binding = 2) buffer newTrail {
+	Cell newTrailMap[];
+};
 
 void main()
 {
-    // gl_FragCoord contains the window relative coordinate for the fragment.
-    // we use gl_FragCoord.x position to control the red color value.
-    // we use gl_FragCoord.y position to control the green color value.
-    // please note that all r, g, b, a values are between 0 and 1.
+    float x = gl_FragCoord.x / screenWidth;
+    float y = gl_FragCoord.y / screenHeight;
+    int index = int(x) + int(int(y) * screenWidth);
+    vec4 val = newTrailMap[index].val;
 
-    float windowWidth = 1024.0;
-    float windowHeight = 768.0;
-
-    float r = gl_FragCoord.x / windowWidth;
-    float g = gl_FragCoord.y / windowHeight;
-    float b = 1.0;
-    float a = 1.0;
-    outputColor = vec4(r, g, b, a);
+    outputColor = vec4(val.r, 0, 0, 1);
 }

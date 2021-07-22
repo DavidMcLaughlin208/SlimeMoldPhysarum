@@ -38,21 +38,17 @@ void ofApp::setup(){
 	doubleBufferedTrailMap.allocate(trailMapSize);
 	particleSize.resize(1024);
 	for (auto& p : particleSize) {
-		p.val.x = 0;// ofRandom(0, ofGetWidth());
-		p.val.y = 0;// ofRandom(0, ofGetHeight());
-		p.val.z = 1;
-		p.val.w = 1;
-		//p.vel = { 1,1,0,0 };
+		p.pos.x = ofRandom(0, ofGetWidth());
+		p.pos.y = ofRandom(0, ofGetHeight());
+		p.pos.z = 1;
+		p.pos.w = 1;
 	}
 	particleBuffer.allocate(particleSize, GL_DYNAMIC_DRAW);
 
 	// Bind buffers for use in shaders
-	
+	particleBuffer.bindBase(GL_SHADER_STORAGE_BUFFER, 0);
 	doubleBufferedTrailMap.src->bindBase(GL_SHADER_STORAGE_BUFFER, 1);
 	doubleBufferedTrailMap.dst->bindBase(GL_SHADER_STORAGE_BUFFER, 2);
-	particleBuffer.bindBase(GL_SHADER_STORAGE_BUFFER, 3);
-
-
 }
 
 //--------------------------------------------------------------
@@ -70,8 +66,6 @@ void ofApp::update(){
 	particleComputeShader.dispatchCompute(particleSize.size(), 1, 1);
 	particleComputeShader.end();
 
-	//Particle* modifiedBuffer = particleBuffer.map<Particle>(GL_READ_WRITE);
-
 	// Perform diffusion and decay on trail map
 	computeShader.begin();
 	computeShader.setUniform1i("screenWidth", ofGetWidth());
@@ -79,8 +73,7 @@ void ofApp::update(){
 	computeShader.dispatchCompute(1, 1, 1);
 	computeShader.end();
 
-	//Cell* modifiedTrailBuffer = doubleBufferedTrailMap.dst->map<Cell>(GL_READ_WRITE);
-	//doubleBufferedTrailMap.swap();
+	doubleBufferedTrailMap.swap();
 }
 
 //--------------------------------------------------------------
@@ -91,8 +84,7 @@ void ofApp::draw(){
 	fragShader.begin();
 	fragShader.setUniform1i("screenWidth", ofGetWidth());
 	fragShader.setUniform1i("screenHeight", ofGetHeight());
-	ofDrawRectangle(0, 0, 10, 10);
-	ofDrawRectangle(10, 10, 10, 10);
+	ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 	fragShader.end();
 	
 	//gui.draw();

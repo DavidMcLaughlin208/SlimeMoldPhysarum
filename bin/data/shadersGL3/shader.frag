@@ -16,8 +16,8 @@ layout(binding = 2) buffer newTrail {
 
 void main()
 {
-    float x = gl_FragCoord.x / screenWidth;
-    float y = gl_FragCoord.y / screenHeight;
+    float x = gl_FragCoord.x; // screenWidth;
+    float y = gl_FragCoord.y; // screenHeight;
     int index = int(x) + int(int(y) * screenWidth);
     vec4 val = newTrailMap[index].val;
 

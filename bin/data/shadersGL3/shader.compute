@@ -11,7 +11,7 @@ struct Cell {
 uniform int screenWidth;
 uniform int screenHeight;
 
-layout(binding = 3) buffer particle {
+layout(binding = 0) buffer particle {
 	Particle particles[];
 };
 
@@ -27,10 +27,5 @@ layout(binding = 2) buffer newTrail {
 
 layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 void main() {
-	// Move Particles
-	//vec3 particle = particles[gl_GlobalInvocationID.x].pos.xyz;
-	//p[gl_GlobalInvocationID.x].pos.xyz += vec3(1, 1, 0);
-
-	// Modify Trail
-	//newTrailMap[gl_LocalInvocationIndex].val.r += 0.001;
+	//Blur and Diffuse logic will go here
 }

@@ -68,8 +68,5 @@ class ofApp : public ofBaseApp{
 		pingPongBuffer doubleBufferedTrailMap;
 		vector<Cell> trailMapSize;
 		ofBufferObject particleBuffer;
-		vector<Cell> particleSize;
-
-
-		
+		vector<Particle> particleSize;
 };

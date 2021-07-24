@@ -18,8 +18,8 @@ void ofApp::setup(){
 	// Load and link shaders
 	fragShader.load("shadersGL3/shader");
 	fragShader.linkProgram();
-	computeShader.setupShaderFromFile(GL_COMPUTE_SHADER, "shadersGL3/shader.compute");
-	computeShader.linkProgram();
+	trailMapComputeShader.setupShaderFromFile(GL_COMPUTE_SHADER, "shadersGL3/trailMapShader.compute");
+	trailMapComputeShader.linkProgram();
 	particleComputeShader.setupShaderFromFile(GL_COMPUTE_SHADER, "shadersGL3/particleShader.compute");
 	particleComputeShader.linkProgram();
 
@@ -36,7 +36,7 @@ void ofApp::setup(){
 		c.val.a = 0;
 	}
 	doubleBufferedTrailMap.allocate(trailMapSize);
-	particleSize.resize(1024);
+	particleSize.resize(100000);
 	for (auto& p : particleSize) {
 		p.pos.x = ofRandom(0, ofGetWidth());
 		p.pos.y = ofRandom(0, ofGetHeight());
@@ -63,15 +63,15 @@ void ofApp::update(){
 	particleComputeShader.begin();
 	particleComputeShader.setUniform1i("screenWidth", ofGetWidth());
 	particleComputeShader.setUniform1i("screenHeight", ofGetHeight());
-	particleComputeShader.dispatchCompute(particleSize.size(), 1, 1);
+	particleComputeShader.dispatchCompute((particleSize.size() + 1024 - 1) / 1024, 1, 1);
 	particleComputeShader.end();
 
 	// Perform diffusion and decay on trail map
-	computeShader.begin();
-	computeShader.setUniform1i("screenWidth", ofGetWidth());
-	computeShader.setUniform1i("screenHeight", ofGetHeight());
-	computeShader.dispatchCompute(1, 1, 1);
-	computeShader.end();
+	trailMapComputeShader.begin();
+	trailMapComputeShader.setUniform1i("screenWidth", ofGetWidth());
+	trailMapComputeShader.setUniform1i("screenHeight", ofGetHeight());
+	trailMapComputeShader.dispatchCompute(ofGetHeight() * ofGetWidth() / 100 , 1, 1);
+	trailMapComputeShader.end();
 
 	doubleBufferedTrailMap.swap();
 }
@@ -80,7 +80,7 @@ void ofApp::update(){
 void ofApp::draw(){
 	// Use fragment shader to draw a rectangle over the whole screen
 	// Color the pixels based on the data in the trail map buffer
-	auto modifiedTrailBuffer = doubleBufferedTrailMap.dst->map<Cell>(GL_READ_WRITE);
+	// auto modifiedTrailBuffer = doubleBufferedTrailMap.dst->map<Cell>(GL_READ_WRITE);
 	fragShader.begin();
 	fragShader.setUniform1i("screenWidth", ofGetWidth());
 	fragShader.setUniform1i("screenHeight", ofGetHeight());

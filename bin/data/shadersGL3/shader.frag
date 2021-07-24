@@ -21,5 +21,5 @@ void main()
     int index = int(x) + int(int(y) * screenWidth);
     vec4 val = newTrailMap[index].val;
 
-    outputColor = vec4(val.r, 0, 0, 1);
+    outputColor = vec4(val.r, val.r, val.r, val.r);
 }

@@ -59,7 +59,7 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 		ofxPanel gui;
 		ofShader fragShader;
-		ofShader computeShader;
+		ofShader trailMapComputeShader;
 		ofShader particleComputeShader;
 		ofxFloatSlider radius;
 		ofxColorSlider colorSlider;

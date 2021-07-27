@@ -5,7 +5,10 @@ void ofApp::setup(){
 	ofDisableArbTex();
 	ofSeedRandom();
 
-	color.setHsb(23, 200, 200);
+	width = ofGetWidth();
+	height = ofGetHeight();
+
+	
 	gui.setup();
 	gui.add(steerSlider.setup("Steer", 0.38, 0, 2));
 	gui.add(angleSlider.setup("Angle", 0.4, 0, 2));
@@ -16,13 +19,16 @@ void ofApp::setup(){
 	gui.add(maxTrailDensitySlider.setup("Max Trail Density", 2, 0, 50));
 	gui.add(sensorSizeSlider.setup("Sensor Size", 1, 0, 4));
 	gui.add(speedAffectedByTrailDensityToggle.setup("speedAffectedByTrailDensity"));
-	speedAffectedByTrailDensity = false;
+	speedAffectedByTrailDensityToggle = false;
 
+	color.setHsb(239, 100, 68);
 	ofParameter<ofColor> param;
 	param.set(color);
 	
-	//gui.add(colorSlider.setup("Blended Color", param, 100, 255));
-	//ofSetCircleResolution(50);
+	gui.add(minColorSlider.setup("Min Color", param, 100, 255));
+	color = ofColor::white;
+	param.set(color);
+	gui.add(maxColorSlider.setup("Max Color", param, 100, 255));
 	ofSetWindowTitle("Slime Mold");
 
 	// Load and link shaders
@@ -37,7 +43,7 @@ void ofApp::setup(){
 	ofEnableBlendMode(OF_BLENDMODE_ADD);
 
 	// Initialize and allocate buffers
-	trailMapSize.resize(ofGetWidth() * ofGetHeight());
+	trailMapSize.resize(width * height);
 	for (int i = 0; i < trailMapSize.size(); i++) {
 		auto & c = trailMapSize[i];
 		c.val.r = 0;
@@ -47,12 +53,12 @@ void ofApp::setup(){
 	}
 	doubleBufferedTrailMap.allocate(trailMapSize);
 	particleSize.resize(1000000);
-	ofVec2f centerPoint = ofVec2f(ofGetWidth() / 2, ofGetHeight() / 2);
+	ofVec2f centerPoint = ofVec2f(width / 2, height / 2);
 	centerPoint.normalize();
 	int framing = 200;
 	for (auto& p : particleSize) {
-		p.pos.x = ofRandom(ofGetWidth() / 2 - framing, ofGetWidth() / 2 + framing);
-		p.pos.y = ofRandom(ofGetHeight() / 2 - framing, ofGetHeight() / 2 + framing);
+		p.pos.x = ofRandom(width / 2 - framing, width / 2 + framing);
+		p.pos.y = ofRandom(height / 2 - framing, height / 2 + framing);
 		p.pos.z = 1;
 		p.pos.w = 1;
 		/*ofVec2f point = ofVec2f(p.pos.x, p.pos.y);
@@ -72,15 +78,7 @@ void ofApp::setup(){
 void ofApp::update(){
 	ofSetWindowTitle(ofToString(ofGetFrameRate()));
 
-	steerStrength = steerSlider;
-	senseAngle = angleSlider;
-	senseDistance = senseDistanceSlider;
-	diffuseRate = diffuseRateSlider;
-	decayRate = decayRateSlider;
-	speed = speedSlider;
-	maxTrailDensity = maxTrailDensitySlider;
-	speedAffectedByTrailDensity = speedAffectedByTrailDensityToggle;
-	sensorSize = sensorSizeSlider;
+	setParameters();
 
 	// Rebind buffers since the pointers for these were swapped last frame
 	doubleBufferedTrailMap.swap();
@@ -89,8 +87,8 @@ void ofApp::update(){
 
 	// Update particle location and modify trail map
 	particleComputeShader.begin();
-	particleComputeShader.setUniform1i("screenWidth", ofGetWidth());
-	particleComputeShader.setUniform1i("screenHeight", ofGetHeight());
+	particleComputeShader.setUniform1i("screenWidth", width);
+	particleComputeShader.setUniform1i("screenHeight", height);
 	particleComputeShader.setUniform1f("senseAngle", senseAngle);
 	particleComputeShader.setUniform1f("steerStrength", steerStrength);
 	particleComputeShader.setUniform1f("senseDistance", senseDistance);
@@ -103,11 +101,11 @@ void ofApp::update(){
 
 	// Perform diffusion and decay on trail map
 	trailMapComputeShader.begin();
-	trailMapComputeShader.setUniform1i("screenWidth", ofGetWidth());
-	trailMapComputeShader.setUniform1i("screenHeight", ofGetHeight());
+	trailMapComputeShader.setUniform1i("screenWidth", width);
+	trailMapComputeShader.setUniform1i("screenHeight", height);
 	trailMapComputeShader.setUniform1f("diffuseRate", diffuseRate);
 	trailMapComputeShader.setUniform1f("decayRate", decayRate);
-	trailMapComputeShader.dispatchCompute(ofGetHeight() * ofGetWidth() / 100 , 1, 1);
+	trailMapComputeShader.dispatchCompute(height * width / 100 , 1, 1);
 	trailMapComputeShader.end();
 }
 
@@ -117,14 +115,32 @@ void ofApp::draw(){
 	// Color the pixels based on the data in the trail map buffer
 	// auto modifiedTrailBuffer = doubleBufferedTrailMap.dst->map<Cell>(GL_READ_WRITE);
 	fragShader.begin();
-	fragShader.setUniform1i("screenWidth", ofGetWidth());
-	fragShader.setUniform1i("screenHeight", ofGetHeight());
+	fragShader.setUniform1i("screenWidth", width);
+	fragShader.setUniform1i("screenHeight", height);
 	fragShader.setUniform1f("decay", decayRate);
 	fragShader.setUniform1f("maxTrailDensity", maxTrailDensity);
+	fragShader.setUniform1f("xRatio", float(ofGetWidth()) / float(width));
+	fragShader.setUniform1f("yRatio", float(ofGetHeight()) / float(height));
+	fragShader.setUniform4f("minColor", minColor);
+	fragShader.setUniform4f("maxColor", maxColor);
 	ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 	fragShader.end();
 	
 	gui.draw();
+}
+
+void ofApp::setParameters() {
+	steerStrength = steerSlider;
+	senseAngle = angleSlider;
+	senseDistance = senseDistanceSlider;
+	diffuseRate = diffuseRateSlider;
+	decayRate = decayRateSlider;
+	speed = speedSlider;
+	maxTrailDensity = maxTrailDensitySlider;
+	speedAffectedByTrailDensity = speedAffectedByTrailDensityToggle;
+	sensorSize = sensorSizeSlider;
+	minColor = minColorSlider;
+	maxColor = maxColorSlider;
 }
 
 //--------------------------------------------------------------

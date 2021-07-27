@@ -46,6 +46,7 @@ class ofApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
+		void setParameters();
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -71,7 +72,8 @@ class ofApp : public ofBaseApp{
 		ofxFloatSlider maxTrailDensitySlider;
 		ofxIntSlider sensorSizeSlider;
 		ofxToggle speedAffectedByTrailDensityToggle;
-		ofxColorSlider colorSlider;
+		ofxColorSlider minColorSlider;
+		ofxColorSlider maxColorSlider;
 		ofColor color;
 		pingPongBuffer doubleBufferedTrailMap;
 		vector<Cell> trailMapSize;
@@ -87,4 +89,9 @@ class ofApp : public ofBaseApp{
 		float maxTrailDensity = 50.0;
 		int sensorSize = 1;
 		bool speedAffectedByTrailDensity = false;
+		ofColor minColor;
+		ofColor maxColor;
+
+		int width;
+		int height;
 };

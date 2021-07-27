@@ -2,6 +2,7 @@
 
 struct Particle {
 	vec4 pos;
+	float angle;
 };
 
 struct Cell {
@@ -10,6 +11,8 @@ struct Cell {
 
 uniform int screenWidth;
 uniform int screenHeight;
+uniform float decayRate;
+uniform float diffuseRate;
 
 layout(binding = 0) buffer particle {
 	Particle particles[];
@@ -27,11 +30,28 @@ layout(binding = 2) buffer newTrail {
 
 layout(local_size_x = 100, local_size_y = 1, local_size_z = 1) in;
 void main() {
-	// Move Particles
-	//vec3 particle = particles[gl_GlobalInvocationID.x].pos.xyz;
-	//p[gl_GlobalInvocationID.x].pos.xyz += vec3(1, 1, 0);
-
 	// Modify Trail
-	int index = int(gl_GlobalInvocationID.x) + int(gl_GlobalInvocationID.y) * screenWidth;
-	newTrailMap[index].val.r -= 0.01;
+	int y = int(gl_GlobalInvocationID.x) / screenWidth;
+	int x = int(gl_GlobalInvocationID.x) - y * screenWidth;
+	
+	float sum = 0;
+	for (int modX = -1; modX <= 1; modX++) {
+		int targetX = x + modX;
+		if (targetX < 0 || targetX > screenWidth - 1) {
+			continue;
+		}
+		for (int modY = -1; modY <= 1; modY++) {
+			int targetY = y + modY;
+			if (targetY < 0 || targetY > screenHeight - 1) {
+				continue;
+			}
+			int index = targetX + (targetY * screenWidth);
+			sum += oldTrailMap[index].val.r;
+		}
+	}
+
+	float to = sum / float(9);
+	int index = x + (y * screenWidth);
+	float from = oldTrailMap[index].val.r;
+	newTrailMap[gl_GlobalInvocationID.x].val.r = max(0, (from + (to - from) * diffuseRate) - decayRate);
 }

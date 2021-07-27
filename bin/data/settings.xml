@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<group>
+	<Steer>2</Steer>
+	<Angle>0.56</Angle>
+	<SenseDistance>3.475</SenseDistance>
+	<Decay>0.095</Decay>
+	<Diffuse>0.74</Diffuse>
+	<Speed>0.875</Speed>
+	<Max_Trail_Density>24</Max_Trail_Density>
+	<Sensor_Size>0</Sensor_Size>
+	<UnknownName>0</UnknownName>
+</group>

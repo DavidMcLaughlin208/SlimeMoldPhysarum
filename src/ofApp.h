@@ -11,6 +11,7 @@ class ofApp : public ofBaseApp{
 
 		struct Particle {
 			glm::vec4 pos;
+			glm::vec4 angle;
 		};
 
 		struct Cell {
@@ -61,12 +62,29 @@ class ofApp : public ofBaseApp{
 		ofShader fragShader;
 		ofShader trailMapComputeShader;
 		ofShader particleComputeShader;
-		ofxFloatSlider radius;
+		ofxFloatSlider steerSlider;
+		ofxFloatSlider angleSlider;
+		ofxFloatSlider senseDistanceSlider;
+		ofxFloatSlider diffuseRateSlider;
+		ofxFloatSlider decayRateSlider;
+		ofxFloatSlider speedSlider;
+		ofxFloatSlider maxTrailDensitySlider;
+		ofxIntSlider sensorSizeSlider;
+		ofxToggle speedAffectedByTrailDensityToggle;
 		ofxColorSlider colorSlider;
 		ofColor color;
-
 		pingPongBuffer doubleBufferedTrailMap;
 		vector<Cell> trailMapSize;
 		ofBufferObject particleBuffer;
 		vector<Particle> particleSize;
+
+		float steerStrength = 6.0;
+		float senseAngle = 6.0;
+		float senseDistance = 6.0;
+		float decayRate = 0.01;
+		float diffuseRate = 0.6;
+		float speed = 1;
+		float maxTrailDensity = 50.0;
+		int sensorSize = 1;
+		bool speedAffectedByTrailDensity = false;
 };

@@ -11,7 +11,7 @@ class ofApp : public ofBaseApp{
 
 		struct Particle {
 			glm::vec4 pos;
-			glm::vec4 angle;
+			glm::vec4 speciesMask;
 		};
 
 		struct Cell {
@@ -72,8 +72,11 @@ class ofApp : public ofBaseApp{
 		ofxFloatSlider maxTrailDensitySlider;
 		ofxIntSlider sensorSizeSlider;
 		ofxToggle speedAffectedByTrailDensityToggle;
-		ofxColorSlider minColorSlider;
-		ofxColorSlider maxColorSlider;
+		ofxColorSlider teamColor1Slider;
+		ofxColorSlider teamColor2Slider;
+		ofxColorSlider teamColor3Slider;
+		ofxColorSlider teamColor4Slider;
+		ofxColorSlider baseColorSlider;
 		ofColor color;
 		pingPongBuffer doubleBufferedTrailMap;
 		vector<Cell> trailMapSize;
@@ -89,9 +92,18 @@ class ofApp : public ofBaseApp{
 		float maxTrailDensity = 50.0;
 		int sensorSize = 1;
 		bool speedAffectedByTrailDensity = false;
-		ofColor minColor;
-		ofColor maxColor;
+		ofColor teamColor1;
+		ofColor teamColor2;
+		ofColor teamColor3;
+		ofColor teamColor4;
+		ofColor baseColor;
 
 		int width;
 		int height;
+
+		int numTeams = 2;
+
+		int guiWidth = 200;
+
+		float deltaTime = 0;
 };

@@ -1,10 +1,5 @@
 #version 440
 
-struct Particle {
-	vec4 pos;
-	float angle;
-};
-
 struct Cell {
 	vec4 val;
 };
@@ -14,10 +9,6 @@ uniform int screenHeight;
 uniform float decayRate;
 uniform float diffuseRate;
 
-layout(binding = 0) buffer particle {
-	Particle particles[];
-};
-
 layout(binding = 1) buffer oldTrail {
 	Cell oldTrailMap[];
 };
@@ -26,6 +17,17 @@ layout(binding = 2) buffer newTrail {
 	Cell newTrailMap[];
 };
 
+float lerp(float to, float from, float weight) {
+	return from + (to - from) * weight;
+}
+
+vec4 lerpVec4(vec4 to, vec4 from, float weight) {
+	float r = max(0, lerp(to.r, from.r, weight) - decayRate);
+	float g = max(0, lerp(to.g, from.g, weight) - decayRate);
+	float b = max(0, lerp(to.b, from.b, weight) - decayRate);
+	float a = max(0, lerp(to.a, from.a, weight) - decayRate);
+	return vec4(r, g, b, a);
+}
 
 
 layout(local_size_x = 100, local_size_y = 1, local_size_z = 1) in;
@@ -34,7 +36,7 @@ void main() {
 	int y = int(gl_GlobalInvocationID.x) / screenWidth;
 	int x = int(gl_GlobalInvocationID.x) - y * screenWidth;
 	
-	float sum = 0;
+	vec4 sum = vec4(0, 0, 0, 0);
 	for (int modX = -1; modX <= 1; modX++) {
 		int targetX = x + modX;
 		if (targetX < 0 || targetX > screenWidth - 1) {
@@ -46,12 +48,12 @@ void main() {
 				continue;
 			}
 			int index = targetX + (targetY * screenWidth);
-			sum += oldTrailMap[index].val.r;
+			sum += oldTrailMap[index].val;
 		}
 	}
 
-	float to = sum / float(9);
+	vec4 to = sum / float(9);
 	int index = x + (y * screenWidth);
-	float from = oldTrailMap[index].val.r;
-	newTrailMap[gl_GlobalInvocationID.x].val.r = max(0, (from + (to - from) * diffuseRate) - decayRate);
+	vec4 from = oldTrailMap[index].val;
+	newTrailMap[gl_GlobalInvocationID.x].val = lerpVec4(to, from, diffuseRate);
 }

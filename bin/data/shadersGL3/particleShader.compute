@@ -2,7 +2,7 @@
 
 struct Particle {
 	vec4 pos;
-	vec4 angle;
+	vec4 speciesMask;
 };
 
 struct Cell {
@@ -18,6 +18,7 @@ uniform float speed;
 uniform float maxTrailDensity;
 uniform int sensorSize;
 uniform bool speedAffectedByTrailDensity;
+uniform float deltaTime;
 
 layout(binding = 0) buffer particle {
 	Particle particles[];
@@ -35,15 +36,29 @@ float scaleSpeed(float speed, float scalar) {
 	return speed * (scalar / (maxTrailDensity / 4));
 }
 
-float rand(vec2 co) {
-	return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
+// Hash function www.cs.ubc.ca/~rbridson/docs/schechter-sca08-turbulence.pdf
+uint hash(uint state)
+{
+	state ^= 2747636419u;
+	state *= 2654435769u;
+	state ^= state >> 16;
+	state *= 2654435769u;
+	state ^= state >> 16;
+	state *= 2654435769u;
+	return state;
+}
+
+float scaleToRange01(uint state)
+{
+	return state / 4294967295.0;
 }
 
 float sense(Particle particle, float angleOffset) {
-	float angle = mod(particle.angle.r + angleOffset + 360.0, 360.0);
+	float angle = mod(particle.pos.z + angleOffset + 360.0, 360.0);
 	vec2 direction = vec2(cos(angle), sin(angle));
 	vec2 senseLocation = senseDistance * direction + particle.pos.xy;
 	float sum = 0;
+	vec4 senseWeight = particle.speciesMask * 2 - 1;
 	for (int modX = -sensorSize; modX <= sensorSize; modX++) {
 		int targetX = int(senseLocation.x) + modX;
 		if (targetX < 0 || targetX > screenWidth - 1) {
@@ -55,10 +70,11 @@ float sense(Particle particle, float angleOffset) {
 				continue;
 			}
 			int index = targetX + (targetY * screenWidth);
-			sum += oldTrailMap[index].val.r;
+			sum += dot(senseWeight, oldTrailMap[index].val);	
 		}
 	}
-	return sum/maxTrailDensity;
+	int sensorArea = sensorSize == 0 ? 1 : (sensorSize + 2) * (sensorSize + 2);
+	return sum / (maxTrailDensity * sensorArea);
 }
 
 
@@ -66,36 +82,36 @@ layout(local_size_x = 1024, local_size_y = 1, local_size_z = 1) in;
 void main() {
 	// Move Particles
 	Particle particle = particles[gl_GlobalInvocationID.x];
-	float left = sense(particle, float(-senseAngle));
-	float right = sense(particle, float(senseAngle));
-	float straight = sense(particle, float(0));
+	float left = sense(particle, -senseAngle);
+	float right = sense(particle, senseAngle);
+	float straight = sense(particle, 0.0);
 
-	float randomness = max(0.5, rand(gl_GlobalInvocationID.xy));
+	float randomness = scaleToRange01(hash(uint(particle.pos.x + particle.pos.y * screenWidth)));
 
-	float angle = particles[gl_GlobalInvocationID.x].angle.r;
+	float angle = particles[gl_GlobalInvocationID.x].pos.z;
 	float localSpeed = speed;
 
 	if (straight > left && straight > right) {
-		//particles[gl_GlobalInvocationID.x].angle.r -= steerStrength;
+		//particles[gl_GlobalInvocationID.x].pos.z -= steerStrength;
 		if (speedAffectedByTrailDensity) {
 			localSpeed = scaleSpeed(localSpeed, straight);
 		}
 		
 	}
 	else if (straight < left && straight < right) {
-		particles[gl_GlobalInvocationID.x].angle.r = mod(angle + (rand(gl_GlobalInvocationID.xy) - 0.5) * 2 * steerStrength + 360.0, 360.0);
+		angle = mod(angle + (randomness - 0.5) * 2 * steerStrength * deltaTime + 360.0, 360.0);
 		if (speedAffectedByTrailDensity) {
 			localSpeed = scaleSpeed(localSpeed, (left + right) / 2);
 		}
 	}
 	else if (left > straight && left > right) {
-		particles[gl_GlobalInvocationID.x].angle.r = mod(angle - (randomness * steerStrength + 360.0), 360.0);
+		angle = mod(angle - (randomness * steerStrength * deltaTime + 360.0), 360.0);
 		if (speedAffectedByTrailDensity) {
 			localSpeed = scaleSpeed(localSpeed, left);
 		}
 	}
 	else if (right > straight && right > left) {
-		particles[gl_GlobalInvocationID.x].angle.r = mod(angle + (randomness * steerStrength + 360.0), 360.0);
+		angle = mod(angle + (randomness * steerStrength * deltaTime + 360.0), 360.0);
 		if (speedAffectedByTrailDensity) {
 			localSpeed = scaleSpeed(localSpeed, right);
 		}
@@ -105,20 +121,22 @@ void main() {
 			localSpeed = scaleSpeed(localSpeed, 0.1);
 		}
 	}
-	vec4 direction = vec4(cos(particle.angle.r), sin(particle.angle.r), 0, 0);
-	vec4 newPos = particle.pos + direction * localSpeed;
+	vec2 direction = vec2(cos(angle), sin(angle));
+	vec2 newPos = particle.pos.xy + direction * localSpeed * deltaTime;
 	if (newPos.x < 0 || newPos.x > screenWidth - 1 || newPos.y < 0 || newPos.y > screenHeight - 1) {
 		newPos.x = min(screenWidth - 1, max(0, particle.pos.x));
 		newPos.y = min(screenHeight - 1, max(0, particle.pos.y));
-		particles[gl_GlobalInvocationID.x].angle.r = mod((particles[gl_GlobalInvocationID.x].angle.r + 60), 360.0f);
-		//particles[gl_GlobalInvocationID.x].angle.r = rand(gl_GlobalInvocationID.xy) * 360.0;
+		angle = mod(angle + 60, 360.0f);
+		//particles[gl_GlobalInvocationID.x].pos.z = mod((particles[gl_GlobalInvocationID.x].pos.z + 60), 360.0f);
+		//particles[gl_GlobalInvocationID.x].pos.z = rand(gl_GlobalInvocationID.xy) * 360.0;
 	}
-	particles[gl_GlobalInvocationID.x].pos = newPos;
+	particles[gl_GlobalInvocationID.x].pos = vec4(newPos.x, newPos.y, angle, 0);
 	
 	int index = int(newPos.x) + int(int(newPos.y) * screenWidth);
 
 	// Modify Trail
-	float trailVal = oldTrailMap[index].val.r;
-	oldTrailMap[index].val.r = min(trailVal + 1, maxTrailDensity);
+	vec4 val = oldTrailMap[index].val;
+	oldTrailMap[index].val = vec4(min(val.r + 1 * particle.speciesMask.r, maxTrailDensity), min(val.g + 1 * particle.speciesMask.g, maxTrailDensity), min(val.b + 1 * particle.speciesMask.b, maxTrailDensity), min(val.a + 1 * particle.speciesMask.a, maxTrailDensity));
+
 }
 

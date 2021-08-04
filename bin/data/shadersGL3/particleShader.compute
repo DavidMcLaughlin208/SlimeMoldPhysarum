@@ -16,6 +16,7 @@ uniform float steerStrength;
 uniform float senseDistance;
 uniform float speed;
 uniform float maxTrailDensity;
+uniform float densitySpeed;
 uniform int sensorSize;
 uniform bool speedAffectedByTrailDensity;
 uniform float deltaTime;
@@ -74,7 +75,7 @@ float sense(Particle particle, float angleOffset) {
 		}
 	}
 	int sensorArea = sensorSize == 0 ? 1 : (sensorSize + 2) * (sensorSize + 2);
-	return sum / (maxTrailDensity * sensorArea);
+	return sum / (maxTrailDensity * densitySpeed);
 }
 
 
@@ -101,7 +102,7 @@ void main() {
 	else if (straight < left && straight < right) {
 		angle = mod(angle + (randomness - 0.5) * 2 * steerStrength * deltaTime + 360.0, 360.0);
 		if (speedAffectedByTrailDensity) {
-			localSpeed = scaleSpeed(localSpeed, (left + right) / 2);
+			localSpeed = scaleSpeed(localSpeed, (left + right) * 0.5);
 		}
 	}
 	else if (left > straight && left > right) {
@@ -132,7 +133,7 @@ void main() {
 	}
 	particles[gl_GlobalInvocationID.x].pos = vec4(newPos.x, newPos.y, angle, 0);
 	
-	int index = int(newPos.x) + int(int(newPos.y) * screenWidth);
+	int index = int(newPos.x) + int(newPos.y) * screenWidth;
 
 	// Modify Trail
 	vec4 val = oldTrailMap[index].val;

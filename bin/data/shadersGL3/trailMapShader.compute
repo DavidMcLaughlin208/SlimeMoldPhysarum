@@ -18,7 +18,9 @@ layout(binding = 2) buffer newTrail {
 };
 
 float lerp(float to, float from, float weight) {
-	return from + (to - from) * weight;
+	return to + weight * (from - to);
+
+	//return from + (to - from) * weight;
 }
 
 vec4 lerpVec4(vec4 to, vec4 from, float weight) {
@@ -30,7 +32,7 @@ vec4 lerpVec4(vec4 to, vec4 from, float weight) {
 }
 
 
-layout(local_size_x = 100, local_size_y = 1, local_size_z = 1) in;
+layout(local_size_x = 1000, local_size_y = 1, local_size_z = 1) in;
 void main() {
 	// Modify Trail
 	int y = int(gl_GlobalInvocationID.x) / screenWidth;

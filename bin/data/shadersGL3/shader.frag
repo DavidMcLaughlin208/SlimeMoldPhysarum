@@ -30,18 +30,18 @@ void main()
     int index = int(x) + int(int(y) * screenWidth);
     
     vec4 val = newTrailMap[index].val / maxTrailDensity;
-    if (val.r > 0) {
-        val.r += decay;  
-   } 
-   if (val.g > 0) {
-        val.g += decay;
-   }
-   if (val.b > 0) {
-        val.g += decay;
-   }
-   if (val.a > 0) {
-        val.a += decay;
-   }
+   // if (val.r > 0) {
+   //     val.r += decay;  
+   //} 
+   //if (val.g > 0) {
+   //     val.g += decay;
+   //}
+   //if (val.b > 0) {
+   //     val.g += decay;
+   //}
+   //if (val.a > 0) {
+   //     val.a += decay;
+   //}
 
    float modR = max(0, val.r - val.g - val.b - val.a);
    float modG = max(0, val.g - val.r - val.b - val.a);
@@ -63,8 +63,7 @@ void main()
         chosenColor = teamColor4;
        weight = modA;
    }
-   outputColor = chosenColor;
-   //outputColor = mix(baseColor, chosenColor, weight);
+   outputColor = mix(baseColor, chosenColor, weight + decay);
    //outputColor = vec4(colorR, colorG, 0, colorR + colorG);
 
 }
